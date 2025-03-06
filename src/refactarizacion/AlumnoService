@@ -1,0 +1,45 @@
+import java.util.List;
+import refactorizacion_crontruccion.Alumno.AlumnoRepository;
+
+public class AlumnoService {
+    private AlumnoRepository repository;
+
+    public AlumnoService(AlumnoRepository repository) {
+        this.repository = repository;
+    }
+
+    public void agregarAlumno(String matricula, String nombre, int edad, double peso) {
+        repository.agregarAlumno(new Alumno(matricula, nombre, edad, peso));
+    }
+
+    public void listarAlumnos() {
+        List<Alumno> alumnos = repository.listarAlumnos();
+        if (alumnos.isEmpty()) {
+            System.out.println("NO HAY ALUMNOS REGISTRADOS");
+        } else {
+            alumnos.forEach(System.out::println);
+        }
+    }
+
+    public void eliminarAlumno(String matricula) {
+        if (repository.eliminarAlumno(matricula)) {
+            System.out.println("ALUMNO ELIMINADADO CORRECTAMENTE");
+        } else {
+            System.out.println("NO SE ENCONTRO EL ALUMNO CON LA MATRICULA" + matricula);
+        }
+    }
+
+    public void modificarAlumno(String matricula, String nuevoNombre, int nuevaEdad, double nuevoPeso) {
+        if (repository.modificarAlumno(matricula, new Alumno(matricula, nuevoNombre, nuevaEdad, nuevoPeso))) {
+            System.out.println("ALUMNO MODIFICADO CORRECTAMENTE");
+        } else {
+            System.out.println(" NO SE ENCONTRO EL ALUMNO CON LA MATRICULA: " + matricula);
+        }
+    }
+
+    public void eliminarTodos() {
+        repository.eliminarTodos();
+        System.out.println("TODOS LOS ALUMNOS HAN SIDO ELIMINADOS");
+    }
+}
+
