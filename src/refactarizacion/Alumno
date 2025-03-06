@@ -1,0 +1,33 @@
+import java.util.List;
+
+public class Alumno {
+    private String matricula;
+    private String nombre;
+    private int edad;
+    private double peso;
+
+    public Alumno(String matricula, String nombre, int edad, double peso) {
+        this.matricula = matricula;
+        this.nombre = nombre;
+        this.edad = edad;
+        this.peso = peso;
+    }
+
+    public String getMatricula() { return matricula; }
+    public String getNombre() { return nombre; }
+    public int getEdad() { return edad; }
+    public double getPeso() { return peso; }
+    
+    @Override
+    public String toString() {
+        return "MATRICULA: " + matricula + " | NOMBRE: " + nombre + " | EDAD: " + edad + " | PESO: " + peso;
+    }
+    
+    interface AlumnoRepository {
+    void agregarAlumno(Alumno alumno);
+    List<Alumno> listarAlumnos();
+    boolean eliminarAlumno(String matricula);
+    boolean modificarAlumno(String matricula, Alumno nuevoAlumno);
+    void eliminarTodos();
+    }
+}
