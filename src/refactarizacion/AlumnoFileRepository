@@ -1,0 +1,84 @@
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import refactorizacion_crontruccion.Alumno.AlumnoRepository;
+
+public class AlumnoFileRepository implements AlumnoRepository {
+    private static final String FILE_NAME = "alumnos.txt";
+
+    @Override
+    public void agregarAlumno(Alumno alumno) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(FILE_NAME, true))) {
+            bw.write(alumno.getMatricula() + "," + alumno.getNombre() + "," + alumno.getEdad() + "," + alumno.getPeso());
+            bw.newLine();
+        } catch (IOException e) {
+            System.out.println("ERROR AL ESCRIBIR EN EL ARCHIVO: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public List<Alumno> listarAlumnos() {
+        List<Alumno> alumnos = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(FILE_NAME))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                String[] datos = linea.split(",");
+                if (datos.length == 4) {
+                    alumnos.add(new Alumno(datos[0], datos[1], Integer.parseInt(datos[2]), Double.parseDouble(datos[3])));
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("ERROR AL ESCRIBIR EN EL ARCHIVO: " + e.getMessage());
+        }
+        return alumnos;
+    }
+
+    @Override
+    public boolean eliminarAlumno(String matricula) {
+        return modificarArchivo(matricula, null);
+    }
+
+    @Override
+    public boolean modificarAlumno(String matricula, Alumno nuevoAlumno) {
+        return modificarArchivo(matricula, nuevoAlumno);
+    }
+
+    private boolean modificarArchivo(String matricula, Alumno nuevoAlumno) {
+        File inputFile = new File(FILE_NAME);
+        File tempFile = new File("temp.txt");
+        boolean found = false;
+        
+        try (BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+             BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
+            String currentLine;
+            while ((currentLine = reader.readLine()) != null) {
+                String[] datos = currentLine.split(",");
+                if (datos[0].equals(matricula)) {
+                    found = true;
+                    if (nuevoAlumno != null) {
+                        writer.write(nuevoAlumno.getMatricula() + "," + nuevoAlumno.getNombre() + "," + nuevoAlumno.getEdad() + "," + nuevoAlumno.getPeso());
+                        writer.newLine();
+                    }
+                } else {
+                    writer.write(currentLine);
+                    writer.newLine();
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("EEROR AL MODIFICAR EL ARCHIVO: " + e.getMessage());
+        }
+        inputFile.delete();
+        tempFile.renameTo(inputFile);
+        return found;
+    }
+
+    @Override
+    public void eliminarTodos() {
+        new File(FILE_NAME).delete();
+    }
+}
